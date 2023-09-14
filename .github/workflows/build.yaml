@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: v0.0.1
+
+      - uses: actions/setup-go@v4.1.0
+        with:
+          go-version: "1.20"
+
+      - run: sudo apt-get install make gcc libc-dev binutils-gold musl-dev git build-essential jq curl tzdata git-lfs openssl -y
+
+      - run: |
+          TAG_NAME=$(curl -L -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/bnb-chain/bsc/releases/latest | jq -r '.tag_name')
+          git clone https://github.com/bnb-chain/bsc -b $TAG_NAME --depth=1 bsc
+          patch bsc/node/rpcstack.go rpcstack.patch
+          cd bsc
+          make geth
+          mv build/bin/geth ../geth
+          cd ..
+          tar -czvf geth_${TAG_NAME}_linux_amd64.tar.gz geth
+          openssl dgst -sha256 geth_${TAG_NAME}_linux_amd64.tar.gz > geth_${TAG_NAME}_linux_amd64.tar.gz.sha256
+
+      - env:
+          TZ: Asia/Shanghai
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add geth_*
+          git commit -m "build by github actions"
+
+      - uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+          force: true
