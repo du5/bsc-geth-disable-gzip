@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: v0.0.1
+          ref: v0.0.2
 
       - uses: actions/setup-go@v4.1.0
         with:
@@ -32,6 +32,7 @@ jobs:
           git clone https://github.com/bnb-chain/bsc -b $TAG_NAME --depth=1 /opt/bsc
           cd /opt/bsc
           patch /opt/bsc/node/rpcstack.go /home/runner/work/bsc-geth-disable-gzip/bsc-geth-disable-gzip/rpcstack.patch
+          git diff | cat
           wget https://musl.cc/x86_64-linux-musl-cross.tgz -qO - | gzip -d | tar xf -
           GIT_COMMIT=$(git rev-parse HEAD)
           GIT_COMMIT_DATE=$(git log -n1 --pretty='format:%cd' --date=format:'%Y%m%d')
