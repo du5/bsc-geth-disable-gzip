@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          ref: v0.0.5
+          ref: v0.0.6
 
-      - uses: actions/setup-go@v4.1.0
+      - uses: actions/setup-go@v5
         with:
           go-version: "1.21"
 
@@ -38,6 +38,7 @@ jobs:
           GIT_COMMIT_DATE=$(git log -n1 --pretty='format:%cd' --date=format:'%Y%m%d')
           GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=$PWD/x86_64-linux-musl-cross/bin/x86_64-linux-musl-gcc go build -ldflags "-X main.gitCommit=$GIT_COMMIT -X main.gitDate=$GIT_COMMIT_DATE -extldflags=-static" -o /home/runner/work/bsc-geth-disable-gzip/bsc-geth-disable-gzip/geth -a ./cmd/geth
           cd /home/runner/work/bsc-geth-disable-gzip/bsc-geth-disable-gzip
+          cp /opt/bsc/go.{mod,sum} .
           tar -czvf geth_${TAG_NAME}_linux_amd64.tar.gz geth
           openssl dgst -sha256 geth_${TAG_NAME}_linux_amd64.tar.gz > geth_${TAG_NAME}_linux_amd64.tar.gz.sha256
 
@@ -46,7 +47,7 @@ jobs:
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add geth_*
+          git add geth_* go.{mod,sum}
           git commit -m "build by github actions"
 
       - uses: ad-m/github-push-action@master
