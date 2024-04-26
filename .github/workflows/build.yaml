@@ -16,11 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: v0.0.6
+          ref: v0.0.7
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.22"
 
       - run: sudo apt-get install make gcc libc-dev binutils-gold musl-dev git build-essential jq curl tzdata git-lfs openssl -y
 

@@ -1,11 +1,13 @@
---- bsc/node/rpcstack.go	2023-11-14 14:40:40
-+++ bsc/node/rpcstack.go	2023-11-14 14:40:34
-@@ -17,14 +17,11 @@
+--- node/rpcstack.go	2024-04-26 23:08:32
++++ node/rpcstack.go	2024-04-26 23:08:27
+# build by diff node/rpcstack.go node/rpcstack.after.go -ruN
+@@ -17,15 +17,12 @@
  package node
 
  import (
 -	"compress/gzip"
  	"context"
+ 	"errors"
  	"fmt"
 -	"io"
  	"net"
@@ -15,7 +17,7 @@
  	"strings"
  	"sync"
  	"sync/atomic"
-@@ -393,7 +390,7 @@
+@@ -401,7 +398,7 @@
  	if len(jwtSecret) != 0 {
  		handler = newJWTHandler(jwtSecret, handler)
  	}
@@ -24,7 +26,7 @@
  }
 
  // NewWSHandlerStack returns a wrapped ws-related handler.
-@@ -462,120 +459,8 @@
+@@ -470,120 +467,8 @@
  		return
  	}
  	http.Error(w, "invalid host specified", http.StatusForbidden)
