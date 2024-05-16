@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: v0.0.7
+          ref: v0.0.8
 
       - uses: actions/setup-go@v5
         with:
@@ -31,7 +31,7 @@ jobs:
           TAG_NAME=$(curl -L -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/bnb-chain/bsc/releases/latest | jq -r '.tag_name')
           git clone https://github.com/bnb-chain/bsc -b $TAG_NAME --depth=1 /opt/bsc
           cd /opt/bsc
-          patch /opt/bsc/node/rpcstack.go /home/runner/work/bsc-geth-disable-gzip/bsc-geth-disable-gzip/rpcstack.patch
+          patch /opt/bsc/node/rpcstack.go /home/runner/work/bsc-geth-disable-gzip/bsc-geth-disable-gzip/node/rpcstack.patch
           git diff | cat
           wget https://musl.cc/x86_64-linux-musl-cross.tgz -qO - | gzip -d | tar xf -
           GIT_COMMIT=$(git rev-parse HEAD)
